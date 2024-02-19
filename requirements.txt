@@ -1,0 +1,13 @@
+# This is a special file to list the packages required for the code to run.
+
+# These packages are imported explicitly in the code:
+pyexcel
+QtAwesome
+QtPy
+
+# These packages are required implicitly:
+pyexcel-ods
+pyexcel-ods3
+pyexcel-xls
+pyexcel-xlsx
+PySide6-Essentials
