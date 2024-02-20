@@ -621,7 +621,7 @@ class UI(QMainWindow):
             base_data: dict[tuple[str, ...], int] = data[0]
             fns: list[str] = [
                 (
-                    self.tr("{} (initial)").format(book.filename)
+                    self.tr("{} (base)").format(book.filename)
                     if index == 0
                     else self.tr("{} differs by…").format(book.filename)
                 )
