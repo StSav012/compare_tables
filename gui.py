@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import enum
+import sys
 import traceback
 from contextlib import suppress
+from os import PathLike
 from pathlib import Path
-from typing import Collection, cast, final
+from typing import BinaryIO, Collection, Final, Iterator, cast, final
 
 from pyexcel import Book, Sheet
 from qtawesome import icon
@@ -77,6 +79,52 @@ def read_sheet(
             with suppress(TypeError):
                 data[key] = data.get(key, 0) + sheet[row, principal_column_index]
     return data
+
+
+def find_qm_files(
+    root: str | PathLike[str] = Path.cwd(),
+    *,
+    exclude: Collection[str | PathLike[str]] = frozenset(),
+) -> Iterator[Path]:
+    magic: Final[bytes] = bytes(
+        [
+            0x3C,
+            0xB8,
+            0x64,
+            0x18,
+            0xCA,
+            0xEF,
+            0x9C,
+            0x95,
+            0xCD,
+            0x21,
+            0x1C,
+            0xBF,
+            0x60,
+            0xA1,
+            0xBD,
+            0xDD,
+        ]
+    )
+    exclude = frozenset(map(Path, exclude))
+
+    def list_files(path: Path) -> set[Path]:
+        files: set[Path] = set()
+        if path not in exclude:
+            if path.is_dir():
+                for child in path.iterdir():
+                    if (child := child.resolve()) not in files:
+                        files.update(list_files(child))
+            elif path.is_file():
+                files.add(path.resolve())
+        return files
+
+    file: Path
+    f_in: BinaryIO
+    for file in list_files(Path(root)):
+        with suppress(Exception), open(file, "rb") as f_in:
+            if f_in.read(len(magic)) == magic:
+                yield file
 
 
 @final
@@ -280,12 +328,14 @@ class UI(QMainWindow):
         )
 
     def _install_translation(self) -> None:
+        qt_translations_path: str = QLibraryInfo.path(
+            QLibraryInfo.LibraryPath.TranslationsPath
+        )
+        qt_translator: QTranslator
+        translator: QTranslator
         if self.settings.translation_path is not None:
-            translator: QTranslator = QTranslator(self)
+            translator = QTranslator(self)
             if translator.load(str(self.settings.translation_path)):
-                translations_path: str = QLibraryInfo.path(
-                    QLibraryInfo.LibraryPath.TranslationsPath
-                )
                 new_locale: QLocale = QLocale(translator.language())
 
                 # remove existing translators
@@ -293,15 +343,39 @@ class UI(QMainWindow):
                     if isinstance(child, QTranslator) and child is not translator:
                         QApplication.removeTranslator(child)
 
-                qt_translator: QTranslator = QTranslator(self)
-                if qt_translator.load(
-                    new_locale, "qt", "_", translations_path
-                ) or qt_translator.load(new_locale, "qtbase", "_", translations_path):
+                qt_translator = QTranslator(self)
+                if qt_translator.load(new_locale, "qtbase", "_", qt_translations_path):
                     QApplication.installTranslator(qt_translator)
 
                 QApplication.installTranslator(translator)
                 self.setLocale(new_locale)
-                self._setup_translation()
+        else:
+            current_locale: QLocale = self.locale()
+            ui_languages: frozenset[str] = frozenset(
+                [
+                    *current_locale.uiLanguages(),
+                    *map(lambda s: s.replace("-", "_"), current_locale.uiLanguages()),
+                ]
+            )
+            for qm_file in find_qm_files(
+                root=qt_translations_path, exclude=[sys.exec_prefix]
+            ):
+                qt_translator = QTranslator(self)
+                if (
+                    qt_translator.load(str(qm_file))
+                    and qt_translator.language() in ui_languages
+                ):
+                    QApplication.installTranslator(qt_translator)
+            for qm_file in find_qm_files(
+                exclude=[qt_translations_path, sys.exec_prefix]
+            ):
+                translator = QTranslator(self)
+                if (
+                    translator.load(str(qm_file))
+                    and translator.language() in ui_languages
+                ):
+                    QApplication.installTranslator(translator)
+        self._setup_translation()
 
     @Slot()
     def on_button_add_row_clicked(self) -> None:
