@@ -46,9 +46,17 @@ class Settings(QSettings):
         ],
     ]:
         return {
+            (self.tr("File Reading"), ("mdi6.book-open-blank-variant",)): {
+                self.tr("Ignore case"): Settings.CallbackOnly(
+                    Settings.ignore_case.fget.__name__
+                ),
+                self.tr("Join spaces"): Settings.CallbackOnly(
+                    Settings.join_spaces.fget.__name__
+                ),
+            },
             (self.tr("View"), ("mdi6.binoculars",)): {
                 self.tr("Translation file:"): Settings.PathCallbackOnly(
-                    "translation_path"
+                    Settings.translation_path.fget.__name__
                 ),
             },
         }
@@ -251,3 +259,31 @@ class Settings(QSettings):
             self.setArrayIndex(index)
             self.setValue("selected", column_name)
         self.endArray()
+
+    @property
+    def ignore_case(self) -> bool:
+        try:
+            self.beginGroup("columns")
+            return cast(bool, self.value("ignoreCase", True))
+        finally:
+            self.endGroup()
+
+    @ignore_case.setter
+    def ignore_case(self, value: bool) -> None:
+        self.beginGroup("columns")
+        self.setValue("ignoreCase", value)
+        self.endGroup()
+
+    @property
+    def join_spaces(self) -> bool:
+        try:
+            self.beginGroup("columns")
+            return cast(bool, self.value("joinSpaces", True))
+        finally:
+            self.endGroup()
+
+    @join_spaces.setter
+    def join_spaces(self, value: bool) -> None:
+        self.beginGroup("columns")
+        self.setValue("joinSpaces", value)
+        self.endGroup()

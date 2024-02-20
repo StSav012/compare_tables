@@ -59,6 +59,9 @@ def read_sheet(
     sheet: Sheet,
     selected_columns: Collection[str],
     principal_column: str,
+    *,
+    ignore_case: bool = False,
+    join_spaces: bool = False,
 ) -> dict[tuple[str, ...], int]:
     data: dict[tuple[str, ...], int] = {}
     column_names: list[str] = [
@@ -76,8 +79,37 @@ def read_sheet(
     for row in range(1, sheet.number_of_rows()):
         key: tuple[str, ...] = tuple(sheet[row, col] for col in key_columns)
         if any(key):
+            matching_key: tuple[str, ...] = key
+            simplified_key: list[str] = list(matching_key)
+            if ignore_case:
+                simplified_key = [
+                    k.casefold() for k in simplified_key if isinstance(k, str)
+                ]
+            if join_spaces:
+                simplified_key = [
+                    " ".join(k.split()) for k in simplified_key if isinstance(k, str)
+                ]
+            for existing_key in data:
+                simplified_existing_key = list(existing_key)
+                if ignore_case:
+                    simplified_existing_key = [
+                        k.casefold()
+                        for k in simplified_existing_key
+                        if isinstance(k, str)
+                    ]
+                if join_spaces:
+                    simplified_existing_key = [
+                        " ".join(k.split())
+                        for k in simplified_existing_key
+                        if isinstance(k, str)
+                    ]
+                if simplified_key == simplified_existing_key:
+                    matching_key = existing_key
+                    break
             with suppress(TypeError):
-                data[key] = data.get(key, 0) + sheet[row, principal_column_index]
+                data[matching_key] = (
+                    data.get(matching_key, 0) + sheet[row, principal_column_index]
+                )
     return data
 
 
@@ -603,11 +635,15 @@ class UI(QMainWindow):
     @Slot()
     def on_button_save_diff_clicked(self) -> None:
         try:
+            ignore_case: bool = self.settings.ignore_case
+            join_spaces: bool = self.settings.join_spaces
             data: list[dict[tuple[str, ...], int]] = [
                 read_sheet(
                     sheet=book[sheet_cb.currentText()],
                     selected_columns=cs.other_selected_columns,
                     principal_column=cs.principal_column,
+                    ignore_case=ignore_case,
+                    join_spaces=join_spaces,
                 )
                 for book, sheet_cb, cs in zip(self.books, self.sheets, self.columns)
             ]
