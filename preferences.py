@@ -106,18 +106,17 @@ class PreferencePage(BaseLogger, QScrollArea):
         combo_box: QComboBox
 
         for key2, value2 in value.items():
+            current_value: Any = getattr(settings, value2.callback)
             if isinstance(value2, Settings.CallbackOnly):
-                if isinstance(getattr(settings, value2.callback), bool):
+                if isinstance(current_value, bool):
                     check_box = QCheckBox(settings.tr(key2), widget)
-                    check_box.setChecked(getattr(settings, value2.callback))
+                    check_box.setChecked(current_value)
                     check_box.toggled.connect(
                         partial(_on_event, callback=value2.callback)
                     )
                     layout.addWidget(check_box)
-                elif isinstance(
-                    initial_path := getattr(settings, value2.callback), Path
-                ):
-                    path_entry = OpenFilePathEntry(initial_path, widget)
+                elif isinstance(current_value, Path):
+                    path_entry = OpenFilePathEntry(current_value, widget)
                     path_entry.changed.connect(
                         partial(_on_event, callback=value2.callback)
                     )
@@ -126,12 +125,9 @@ class PreferencePage(BaseLogger, QScrollArea):
                     PreferencePage.logger.error(
                         f"The type of {value2.callback!r} is not supported"
                     )
-            if isinstance(value2, Settings.PathCallbackOnly):
-                if isinstance(
-                    initial_path := getattr(settings, value2.callback),
-                    (Path, type(None)),
-                ):
-                    path_entry = OpenFilePathEntry(initial_path, widget)
+            elif isinstance(value2, Settings.PathCallbackOnly):
+                if isinstance(current_value, (Path, type(None))):
+                    path_entry = OpenFilePathEntry(current_value, widget)
                     path_entry.changed.connect(
                         partial(_on_event, callback=value2.callback)
                     )
@@ -141,11 +137,16 @@ class PreferencePage(BaseLogger, QScrollArea):
                         f"The type of {value2.callback!r} is not supported"
                     )
             elif isinstance(value2, Settings.SpinboxAndCallback):
-                if isinstance(getattr(settings, value2.callback), int):
+                if isinstance(current_value, int):
                     spin_box = QSpinBox(widget)
-                else:
+                elif isinstance(current_value, float):
                     spin_box = QDoubleSpinBox(widget)
-                spin_box.setValue(getattr(settings, value2.callback))
+                else:
+                    PreferencePage.logger.error(
+                        f"The type of {value2.callback!r} is not supported"
+                    )
+                    continue
+                spin_box.setValue(current_value)
                 spin_box.setRange(value2.range.start, value2.range.stop)
                 spin_box.setSingleStep(value2.range.step or 1)
                 spin_box.setPrefix(value2.prefix_and_suffix[0])
@@ -155,6 +156,13 @@ class PreferencePage(BaseLogger, QScrollArea):
                 )
                 layout.addRow(key2, spin_box)
             elif isinstance(value2, Settings.ComboboxAndCallback):
+                if isinstance(current_value, str):
+                    ...
+                else:
+                    PreferencePage.logger.error(
+                        f"The type of {value2.callback!r} is not supported"
+                    )
+                    continue
                 combo_box = QComboBox(widget)
                 combobox_data: dict[Hashable, str]
                 if isinstance(value2.combobox_data, dict):
@@ -164,9 +172,7 @@ class PreferencePage(BaseLogger, QScrollArea):
                 for index, (data, item) in enumerate(combobox_data.items()):
                     combo_box.addItem(settings.tr(item), data)
                 combo_box.setEditable(False)
-                combo_box.setCurrentText(
-                    combobox_data[getattr(settings, value2.callback)]
-                )
+                combo_box.setCurrentText(combobox_data[current_value])
                 combo_box.currentIndexChanged.connect(
                     partial(
                         _on_combo_box_current_index_changed,
@@ -176,9 +182,15 @@ class PreferencePage(BaseLogger, QScrollArea):
                 )
                 layout.addRow(settings.tr(key2), combo_box)
             elif isinstance(value2, Settings.EditableComboboxAndCallback):
+                if isinstance(current_value, str):
+                    current_text: str = current_value
+                else:
+                    PreferencePage.logger.error(
+                        f"The type of {value2.callback!r} is not supported"
+                    )
+                    continue
                 combo_box = QComboBox(widget)
                 combo_box.addItems(value2.combobox_items)
-                current_text: str = getattr(settings, value2.callback)
                 if current_text in value2.combobox_items:
                     combo_box.setCurrentIndex(value2.combobox_items.index(current_text))
                 else:
