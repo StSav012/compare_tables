@@ -46,7 +46,7 @@ class BaseLogger:
         pass
 
 
-class PreferencePage(QScrollArea, BaseLogger):
+class PreferencePage(BaseLogger, QScrollArea):
     """A page of the Preferences dialog"""
 
     def __init__(
@@ -64,7 +64,8 @@ class PreferencePage(QScrollArea, BaseLogger):
         settings: Settings,
         parent: QWidget | None = None,
     ) -> None:
-        super().__init__(parent)
+        super(BaseLogger, self).__init__()
+        super(QScrollArea, self).__init__(parent)
 
         widget: QWidget = QWidget(self)
         self.setWidget(widget)
@@ -196,11 +197,12 @@ class PreferencePage(QScrollArea, BaseLogger):
         return self._changed_settings.copy()
 
 
-class PreferencesBody(QSplitter, BaseLogger):
+class PreferencesBody(BaseLogger, QSplitter):
     """The main area of the GUI preferences dialog"""
 
     def __init__(self, settings: Settings, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
+        super(BaseLogger, self).__init__()
+        super(QSplitter, self).__init__(parent)
 
         self.setOrientation(Qt.Orientation.Horizontal)
         self.setChildrenCollapsible(False)
