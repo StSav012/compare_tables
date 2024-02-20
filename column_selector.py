@@ -1,7 +1,7 @@
 # coding=utf-8
 from __future__ import annotations
 
-from typing import ClassVar, Collection, Iterable, TYPE_CHECKING
+from typing import ClassVar, Collection, Iterable, Sequence, TYPE_CHECKING
 
 from qtpy.QtGui import QMouseEvent
 from qtpy.QtWidgets import (
@@ -69,7 +69,7 @@ class ColumnSelectorPage(QWizardPage):
     else:
 
         @Property(list)
-        def selected_columns(self) -> list[str]:
+        def selected_columns(self) -> Sequence[str]:
             return [cb.text() for cb in self._check_boxes if cb.isChecked()]
 
         @selected_columns.setter
@@ -158,7 +158,7 @@ class ColumnSelectorWizard(QWizard):
 
 
 class ColumnSelector(QLabel):
-    last_time_selected_columns: ClassVar[set[str]] = set()
+    last_time_selected_columns: ClassVar[Collection[str]] = frozenset()
     last_time_principal_column: ClassVar[str] = ""
 
     def __init__(self, parent: QWidget | None = None) -> None:

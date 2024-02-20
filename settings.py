@@ -36,9 +36,14 @@ class Settings(QSettings):
         self,
     ) -> dict[
         str | tuple[str, tuple[str, ...]],
-        dict[str, tuple[str]]
-        | dict[str, tuple[Path]]
-        | dict[str, tuple[Sequence[str], Sequence[str], str]],
+        dict[
+            str,
+            CallbackOnly
+            | PathCallbackOnly
+            | SpinboxAndCallback
+            | ComboboxAndCallback
+            | EditableComboboxAndCallback,
+        ],
     ]:
         return {
             (self.tr("View"), ("mdi6.binoculars",)): {
@@ -230,7 +235,7 @@ class Settings(QSettings):
         self.endGroup()
 
     @property
-    def selected_columns(self) -> list[str]:
+    def selected_columns(self) -> Sequence[str]:
         selected_columns: list[str] = []
         length: int = self.beginReadArray("columns")
         for index in range(length):

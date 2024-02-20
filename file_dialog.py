@@ -134,7 +134,7 @@ class SaveFileDialog(FileDialog):
                     Path(filename or opened_filename)
                     .with_name(Path(opened_filename).name)
                     .with_suffix(
-                        mimetypes.guess_extension(selected_format, strict=False)
+                        mimetypes.guess_extension(selected_format, strict=False) or ""
                     )
                 )
             )
@@ -142,7 +142,7 @@ class SaveFileDialog(FileDialog):
         if self.exec() and self.selectedFiles():
             self.settings.save_dialog_state = self.saveState()
             self.settings.save_dialog_geometry = self.saveGeometry()
-            filename: str = self.selectedFiles()[0]
+            filename = self.selectedFiles()[0]
             if not filename:
                 return ""
             new_file_format: str | None = mimetypes.guess_type(

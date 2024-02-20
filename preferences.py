@@ -55,6 +55,7 @@ class PreferencePage(QScrollArea, BaseLogger):
             str,
             (
                 Settings.CallbackOnly
+                | Settings.PathCallbackOnly
                 | Settings.SpinboxAndCallback
                 | Settings.ComboboxAndCallback
                 | Settings.EditableComboboxAndCallback
@@ -92,6 +93,7 @@ class PreferencePage(QScrollArea, BaseLogger):
         key2: str
         value2: (
             Settings.CallbackOnly
+            | Settings.PathCallbackOnly
             | Settings.SpinboxAndCallback
             | Settings.ComboboxAndCallback
             | Settings.EditableComboboxAndCallback

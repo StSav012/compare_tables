@@ -636,11 +636,13 @@ class UI(QMainWindow):
             diff: dict[tuple[str, ...], list[int]] = {}
             for key in all_keys:
                 diff[key] = [base_data.get(key, 0)]
-            for d in data[1:]:
+            for another_data in data[1:]:
                 for key in all_keys:
                     with suppress(TypeError):
-                        diff[key].append(d.get(key, 0) - base_data.get(key, 0))
-    
+                        diff[key].append(
+                            another_data.get(key, 0) - base_data.get(key, 0)
+                        )
+
             sheet: Sheet = Sheet(name=self.tr("Difference"), colnames=header)
             for row, key in enumerate(all_keys):
                 for col, k in enumerate(key):
