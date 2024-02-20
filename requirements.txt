@@ -10,4 +10,3 @@ pyexcel-ods
 pyexcel-ods3
 pyexcel-xls
 pyexcel-xlsx
-PySide6-Essentials
