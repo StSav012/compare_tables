@@ -617,7 +617,7 @@ class UI(QMainWindow):
             if not all_keys:
                 return
             longest_key_length: int = max(map(len, all_keys))
-    
+
             base_data: dict[tuple[str, ...], int] = data[0]
             fns: list[str] = [
                 (
@@ -649,11 +649,7 @@ class UI(QMainWindow):
                     sheet[row, col] = d
             self.save_file_dialog.save(sheet)
         except Exception as ex:
-            QMessageBox.critical(
-                self,
-                ex.__class__.__name__,
-                traceback.format_exc()
-            )
+            QMessageBox.critical(self, ex.__class__.__name__, traceback.format_exc())
         else:
             QMessageBox.information(self, self.windowTitle(), self.tr("Done."))
 
