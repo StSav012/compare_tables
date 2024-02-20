@@ -38,128 +38,128 @@
 	<context>
 		<name>UI</name>
 		<message>
-			<location filename="gui.py" line="252"/>
+			<location filename="gui.py" line="284"/>
 			<source>Compare Lists of Lines</source>
 			<translation>Сравнить списки линий</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="254"/>
+			<location filename="gui.py" line="286"/>
 			<source>&amp;File</source>
 			<translation>&amp;Файл</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="255"/>
+			<location filename="gui.py" line="287"/>
 			<source>&amp;Preferences…</source>
 			<translation>&amp;Настройки…</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="256"/>
-			<location filename="gui.py" line="267"/>
+			<location filename="gui.py" line="288"/>
+			<location filename="gui.py" line="299"/>
 			<source>&amp;Quit</source>
 			<translation>В&amp;ыход</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="257"/>
+			<location filename="gui.py" line="289"/>
 			<source>&amp;Help</source>
 			<translation>Помо&amp;щь</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="258"/>
+			<location filename="gui.py" line="290"/>
 			<source>&amp;About</source>
 			<translation>&amp;О программе</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="259"/>
+			<location filename="gui.py" line="291"/>
 			<source>About &amp;Qt</source>
 			<translation>О &amp;Qt</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="261"/>
+			<location filename="gui.py" line="293"/>
 			<source>Move &amp;Up</source>
 			<translation>Переместить в&amp;верх</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="262"/>
+			<location filename="gui.py" line="294"/>
 			<source>Move &amp;Down</source>
 			<translation>Переместить в&amp;низ</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="263"/>
+			<location filename="gui.py" line="295"/>
 			<source>&amp;Add row</source>
 			<translation>&amp;Добавить строку</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="264"/>
+			<location filename="gui.py" line="296"/>
 			<source>&amp;Remove</source>
 			<translation>&amp;Удалить</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="266"/>
+			<location filename="gui.py" line="298"/>
 			<source>Di&amp;fference</source>
 			<translation>&amp;Разница</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="270"/>
+			<location filename="gui.py" line="302"/>
 			<source>File</source>
 			<translation>Файл</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="270"/>
+			<location filename="gui.py" line="302"/>
 			<source>Sheet</source>
 			<translation>Лист</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="270"/>
+			<location filename="gui.py" line="302"/>
 			<source>Columns</source>
 			<translation>Столбцы</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="624"/>
+			<location filename="gui.py" line="660"/>
 			<source>{} (base)</source>
 			<translation>{} (начальный)</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="626"/>
+			<location filename="gui.py" line="662"/>
 			<source>{} differs by…</source>
 			<translation>{} отличается на…</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="646"/>
+			<location filename="gui.py" line="682"/>
 			<source>Difference</source>
 			<translation>Разница</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="656"/>
+			<location filename="gui.py" line="692"/>
 			<source>Done.</source>
 			<translation>Готово.</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="675"/>
+			<location filename="gui.py" line="711"/>
 			<source>About</source>
 			<translation>О программе</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="679"/>
+			<location filename="gui.py" line="715"/>
 			<source>The application is version {0}</source>
 			<translation>Это приложение — версии {0}</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="685"/>
+			<location filename="gui.py" line="721"/>
 			<source>The application compares tables and stores the difference of the selected columns.</source>
 			<translation>Это приложение сравнивает таблицы и записывает разницу между выбранными столбцами.</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="689"/>
+			<location filename="gui.py" line="725"/>
 			<source>The application is licensed under the {0}.</source>
 			<translation>Это приложение поставляется под лицензией {0}.</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="691"/>
+			<location filename="gui.py" line="727"/>
 			<source>GNU LGPL version 3</source>
 			<translation>GNU LGPL версия 3</translation>
 		</message>
 		<message>
-			<location filename="gui.py" line="695"/>
+			<location filename="gui.py" line="731"/>
 			<source>The source code is available on {0}.</source>
 			<translation>Исходный код доступен на {0}.</translation>
 		</message>
@@ -180,7 +180,7 @@
 	<context>
 		<name>Preferences</name>
 		<message>
-			<location filename="preferences.py" line="274"/>
+			<location filename="preferences.py" line="288"/>
 			<source>Preferences</source>
 			<translation>Настройки</translation>
 		</message>
@@ -189,11 +189,26 @@
 		<name>Settings</name>
 		<message>
 			<location filename="settings.py" line="49"/>
+			<source>File Reading</source>
+			<translation>Чтение файла</translation>
+		</message>
+		<message>
+			<location filename="settings.py" line="57"/>
 			<source>View</source>
 			<translation>Вид</translation>
 		</message>
 		<message>
 			<location filename="settings.py" line="50"/>
+			<source>Ignore case</source>
+			<translation>Не учитывать регистр символов</translation>
+		</message>
+		<message>
+			<location filename="settings.py" line="53"/>
+			<source>Merge spaces</source>
+			<translation>Считать идущие подряд пробелы за один</translation>
+		</message>
+		<message>
+			<location filename="settings.py" line="58"/>
 			<source>Translation file:</source>
 			<translation>Файл перевода:</translation>
 		</message>

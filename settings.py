@@ -50,8 +50,8 @@ class Settings(QSettings):
                 self.tr("Ignore case"): Settings.CallbackOnly(
                     Settings.ignore_case.fget.__name__
                 ),
-                self.tr("Join spaces"): Settings.CallbackOnly(
-                    Settings.join_spaces.fget.__name__
+                self.tr("Merge spaces"): Settings.CallbackOnly(
+                    Settings.merge_spaces.fget.__name__
                 ),
             },
             (self.tr("View"), ("mdi6.binoculars",)): {
@@ -275,15 +275,15 @@ class Settings(QSettings):
         self.endGroup()
 
     @property
-    def join_spaces(self) -> bool:
+    def merge_spaces(self) -> bool:
         try:
             self.beginGroup("columns")
-            return cast(bool, self.value("joinSpaces", True))
+            return cast(bool, self.value("mergeSpaces", True))
         finally:
             self.endGroup()
 
-    @join_spaces.setter
-    def join_spaces(self, value: bool) -> None:
+    @merge_spaces.setter
+    def merge_spaces(self, value: bool) -> None:
         self.beginGroup("columns")
-        self.setValue("joinSpaces", value)
+        self.setValue("mergeSpaces", value)
         self.endGroup()
