@@ -5,11 +5,12 @@ import enum
 import sys
 import traceback
 from contextlib import suppress
+from io import BytesIO
 from os import PathLike
 from pathlib import Path
 from typing import BinaryIO, Collection, Final, Iterator, cast, final
 
-from pyexcel import Book, Sheet
+from pyexcel import Book, Sheet, get_book
 from qtawesome import icon
 from qtpy.QtCore import QLibraryInfo, QLocale, QModelIndex, QTranslator, Slot
 from qtpy.QtGui import QAction, QCloseEvent, QIcon, QKeySequence
@@ -175,9 +176,25 @@ class UI(QMainWindow):
 
         self.settings: Settings = Settings("SavSoft", "Compare Lists of Lines", self)
         self.settings.setObjectName(self.settings.__class__.__name__)
-        self.open_file_dialog: OpenFileDialog = OpenFileDialog(self.settings, self)
+        self.open_file_dialog: OpenFileDialog = OpenFileDialog(
+            self.settings,
+            (
+                OpenFileDialog.SupportedType(("pyexcel_xlsx",), ".xlsx"),
+                OpenFileDialog.SupportedType(("pyexcel_ods", "pyexcel_ods3"), ".ods"),
+                OpenFileDialog.SupportedType(("pyexcel_xls",), ".xls"),
+            ),
+            self,
+        )
         self.open_file_dialog.setObjectName(self.open_file_dialog.__class__.__name__)
-        self.save_file_dialog: SaveFileDialog = SaveFileDialog(self.settings, self)
+        self.save_file_dialog: SaveFileDialog = SaveFileDialog(
+            self.settings,
+            (
+                OpenFileDialog.SupportedType(("pyexcel_xlsx",), ".xlsx"),
+                OpenFileDialog.SupportedType(("pyexcel_ods", "pyexcel_ods3"), ".ods"),
+                OpenFileDialog.SupportedType(("pyexcel_xls",), ".xls"),
+            ),
+            self,
+        )
         self.save_file_dialog.setObjectName(self.save_file_dialog.__class__.__name__)
 
         menu: QMenuBar = QMenuBar(self)
@@ -411,11 +428,14 @@ class UI(QMainWindow):
 
     @Slot()
     def on_button_add_row_clicked(self) -> None:
-        self.centralWidget().setDisabled(True)
-        book: Book | None = self.open_file_dialog.load()
-        self.centralWidget().setEnabled(True)
-        if book is None:
+        filename: Path | None
+        if not (filename := self.open_file_dialog.get_open_filename()):
             return
+        data: bytes = filename.read_bytes()
+        self.centralWidget().setDisabled(True)
+        book: Book = get_book(file_content=data, file_type=filename.suffix.lstrip("."))
+        self.centralWidget().setEnabled(True)
+        book.filename = filename
         self.books.append(book)
 
         row: int
@@ -598,11 +618,17 @@ class UI(QMainWindow):
     @Slot(int, int)
     def on_table_cell_double_clicked(self, row: int, col: int) -> None:
         if col == Columns.File:
-            self.centralWidget().setDisabled(True)
-            book: Book | None = self.open_file_dialog.load()
-            self.centralWidget().setEnabled(True)
-            if book is None:
+            filename: Path | None
+            if not (filename := self.open_file_dialog.get_open_filename()):
                 return
+            data: bytes = filename.read_bytes()
+            self.centralWidget().setDisabled(True)
+            book: Book = get_book(
+                file_content=data, file_type=filename.suffix.lstrip(".")
+            )
+            self.centralWidget().setEnabled(True)
+            book.filename = filename
+
             self.books[row] = book
 
             self.table.item(row, Columns.File).setText(book.filename)
@@ -685,7 +711,16 @@ class UI(QMainWindow):
                     sheet[row, col] = k
                 for col, d in enumerate(diff[key], start=longest_key_length):
                     sheet[row, col] = d
-            self.save_file_dialog.save(sheet)
+
+            filename: Path | None
+            if not (filename := self.save_file_dialog.get_save_filename()):
+                return
+            sheet_data: BytesIO = sheet.save_to_memory(filename.suffix.lstrip("."))
+            self.centralWidget().setDisabled(True)
+            try:
+                filename.write_bytes(sheet_data.read())
+            finally:
+                self.centralWidget().setEnabled(True)
         except Exception as ex:
             QMessageBox.critical(self, ex.__class__.__name__, traceback.format_exc())
         else:
