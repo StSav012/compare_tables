@@ -120,7 +120,7 @@ class PreferencePage(BaseLogger, QScrollArea):
                     path_entry.changed.connect(
                         partial(_on_event, callback=value2.callback)
                     )
-                    layout.addRow(settings.tr(key2), path_entry)
+                    layout.addRow(key2, path_entry)
                 else:
                     PreferencePage.logger.error(
                         f"The type of {value2.callback!r} is not supported"
@@ -131,7 +131,7 @@ class PreferencePage(BaseLogger, QScrollArea):
                     path_entry.changed.connect(
                         partial(_on_event, callback=value2.callback)
                     )
-                    layout.addRow(settings.tr(key2), path_entry)
+                    layout.addRow(key2, path_entry)
                 else:
                     PreferencePage.logger.error(
                         f"The type of {value2.callback!r} is not supported"
@@ -180,7 +180,7 @@ class PreferencePage(BaseLogger, QScrollArea):
                         callback=value2.callback,
                     )
                 )
-                layout.addRow(settings.tr(key2), combo_box)
+                layout.addRow(key2, combo_box)
             elif isinstance(value2, Settings.EditableComboboxAndCallback):
                 if isinstance(current_value, str):
                     current_text: str = current_value
@@ -200,7 +200,7 @@ class PreferencePage(BaseLogger, QScrollArea):
                 combo_box.currentTextChanged.connect(
                     partial(_on_event, callback=value2.callback)
                 )
-                layout.addRow(settings.tr(key2), combo_box)
+                layout.addRow(key2, combo_box)
             else:
                 PreferencePage.logger.error(f"{value2!r} is not supported")
 
