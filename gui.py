@@ -435,7 +435,8 @@ class UI(QMainWindow):
         self.centralWidget().setDisabled(True)
         book: Book = get_book(file_content=data, file_type=filename.suffix.lstrip("."))
         self.centralWidget().setEnabled(True)
-        book.filename = filename
+        book.filename = filename.name
+        book.path = filename
         self.books.append(book)
 
         row: int
@@ -448,6 +449,7 @@ class UI(QMainWindow):
         self.table.insertRow(row)
 
         item: QTableWidgetItem = QTableWidgetItem(book.filename)
+        item.setToolTip(str(book.path))
         self.table.setItem(row, Columns.File, item)
 
         cb: QComboBox = QComboBox(self.table)
@@ -627,11 +629,13 @@ class UI(QMainWindow):
                 file_content=data, file_type=filename.suffix.lstrip(".")
             )
             self.centralWidget().setEnabled(True)
-            book.filename = filename
+            book.filename = filename.name
+            book.path = filename
 
             self.books[row] = book
 
             self.table.item(row, Columns.File).setText(book.filename)
+            self.table.item(row, Columns.File).setToolTip(str(book.path))
 
             cb: QComboBox = cast(QComboBox, self.table.cellWidget(row, Columns.Sheets))
             if book.sheet_names():
@@ -683,9 +687,11 @@ class UI(QMainWindow):
             base_data: dict[tuple[str, ...], int] = data[0]
             fns: list[str] = [
                 (
-                    self.tr("{} (base)").format(book.filename)
+                    self.tr("{} (base)").format(book.path)
                     if index == 0
-                    else self.tr("{} differs by…").format(book.filename)
+                    else self.tr("{} differs by…").format(
+                        book.path.relative_to(self.books[0].path.parent)
+                    )
                 )
                 for index, book in enumerate(self.books)
             ]
