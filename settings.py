@@ -3,11 +3,25 @@ from __future__ import annotations
 
 from os import PathLike
 from pathlib import Path
-from typing import Hashable, Iterable, NamedTuple, Sequence, cast
+from typing import (
+    Any,
+    Hashable,
+    Iterable,
+    NamedTuple,
+    ParamSpec,
+    Sequence,
+    Type,
+    TypeVar,
+    cast,
+    overload,
+)
 
 from qtpy.QtCore import QByteArray, QSettings
 
 __all__ = ["Settings"]
+
+_T = TypeVar("_T")
+_P = ParamSpec("_P")
 
 
 class Settings(QSettings):
@@ -61,6 +75,24 @@ class Settings(QSettings):
                 ),
             },
         }
+
+    @overload
+    def value(self, key: str) -> Any: ...
+
+    @overload
+    def value(self, key: str, fallback: _T) -> _T: ...
+
+    @overload
+    def value(self, key: str, fallback: _T, typ: Type[_T]) -> _T: ...
+
+    def value(self, key: str, *args: _P.args) -> Any:
+        if len(args) == 0:
+            return super().value(key)
+        if len(args) == 1:
+            fallback = args[0]
+            typ = type(fallback)
+            return super().value(key, fallback, typ)
+        return super().value(key, *args)
 
     @property
     def translation_path(self) -> Path | None:
