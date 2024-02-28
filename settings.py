@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import annotations
 
+from os import PathLike
 from pathlib import Path
 from typing import Hashable, Iterable, NamedTuple, Sequence, cast
 
@@ -69,37 +70,35 @@ class Settings(QSettings):
         return Path(v) if v else None
 
     @translation_path.setter
-    def translation_path(self, new_value: Path | None) -> None:
+    def translation_path(self, new_value: str | PathLike[str] | None) -> None:
         self.beginGroup("translation")
         self.setValue("filePath", str(new_value) if new_value is not None else "")
         self.endGroup()
 
     @property
-    def opened_file_name(self) -> str:
-        try:
-            self.beginGroup("location")
-            return cast(str, self.value("open", str(Path.cwd()), str))
-        finally:
-            self.endGroup()
+    def opened_file_name(self) -> Path:
+        self.beginGroup("location")
+        v: str = cast(str, self.value("open", "", str))
+        self.endGroup()
+        return Path(v) if v else Path.cwd()
 
     @opened_file_name.setter
-    def opened_file_name(self, filename: str) -> None:
+    def opened_file_name(self, filename: str | PathLike[str]) -> None:
         self.beginGroup("location")
-        self.setValue("open", filename)
+        self.setValue("open", str(filename))
         self.endGroup()
 
     @property
-    def saved_file_name(self) -> str:
-        try:
-            self.beginGroup("location")
-            return cast(str, self.value("save", str(Path.cwd()), str))
-        finally:
-            self.endGroup()
+    def saved_file_name(self) -> Path:
+        self.beginGroup("location")
+        v: str = cast(str, self.value("save", "", str))
+        self.endGroup()
+        return Path(v) if v else Path.cwd()
 
     @saved_file_name.setter
-    def saved_file_name(self, filename: str) -> None:
+    def saved_file_name(self, filename: str | PathLike[str]) -> None:
         self.beginGroup("location")
-        self.setValue("save", filename)
+        self.setValue("save", str(filename))
         self.endGroup()
 
     @property
